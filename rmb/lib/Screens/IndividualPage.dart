@@ -54,7 +54,7 @@ class _IndividualPageState extends State<IndividualPage> {
     super.initState();
     //connect to the server
     connect();
-    getKey();
+    // getKey();
     //local db
     db = DB();
     getMessagesInd();
