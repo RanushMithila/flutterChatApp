@@ -6,22 +6,26 @@ import 'package:rmb/sqlite/KeyModel.dart';
 import 'package:rmb/sqlite/UserDataModel.dart';
 
 import '../Model/ChatModel.dart';
+import '../Model/RSAModel.dart';
 import '../sqlite/Database.dart';
 
-//public key private key
-import 'package:rsa_encrypt/rsa_encrypt.dart';
-import 'package:pointycastle/api.dart' as crypto;
+// this part remove because I found new algorithm for RSA
+// ================================================================
+// //public key private key
+// import 'package:rsa_encrypt/rsa_encrypt.dart';
+// import 'package:pointycastle/api.dart' as crypto;
 
-//Future to hold our KeyPair
-late Future<crypto.AsymmetricKeyPair> futureKeyPair;
-//to store the KeyPair once we get data from our future
-late crypto.AsymmetricKeyPair keyPair;
+// //Future to hold our KeyPair
+// late Future<crypto.AsymmetricKeyPair> futureKeyPair;
+// //to store the KeyPair once we get data from our future
+// late crypto.AsymmetricKeyPair keyPair;
 
-Future<crypto.AsymmetricKeyPair<crypto.PublicKey, crypto.PrivateKey>>
-    getKeyPair() {
-  var helper = RsaKeyHelper();
-  return helper.computeRSAKeyPair(helper.getSecureRandom());
-}
+// Future<crypto.AsymmetricKeyPair<crypto.PublicKey, crypto.PrivateKey>>
+//     getKeyPair() {
+//   var helper = RsaKeyHelper();
+//   return helper.computeRSAKeyPair(helper.getSecureRandom());
+// }
+// ================================================================
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -42,10 +46,18 @@ class _LoginScreenState extends State<LoginScreen> {
     db = DB();
     getUserLog();
 
+    // this part remove because I found new algorithm for RSA
+    // ================================================================
+    // final keyPair = getKeyPair();
+    // Future publicKey = keyPair.then((value) => value.publicKey);
+    // final privateKey = keyPair.then((value) => value.privateKey);
+    // ================================================================
+
     //getting keys
-    final keyPair = getKeyPair();
-    final publicKey = keyPair.then((value) => value.publicKey);
-    final privateKey = keyPair.then((value) => value.privateKey);
+    final rsaPair = generateRSAkeyPair(getSecureRandom(), bitLength: 1024);
+
+    // final private = encodePrivateKeyToPemPKCS1(privateKey);
+    // publicKey.then((value) => print(value));
   }
 
   late ChatModel sourceChat;

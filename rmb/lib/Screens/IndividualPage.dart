@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,6 +12,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:sqflite/sqflite.dart';
 
 import '../Model/ChatModel.dart';
+import '../Model/RSAModel.dart';
 import '../sqlite/Database.dart';
 
 class IndividualPage extends StatefulWidget {
@@ -44,13 +48,25 @@ class _IndividualPageState extends State<IndividualPage> {
     //connect to the server
     connect();
 
-    // publicKey.then((value) => print(value));
-
     //local db
     db = DB();
     getMessagesInd();
     //access all the messages from the local database database and display them one by one
+//======================================================================================
 
+    //test
+//======================================================================================
+
+    //it works perfectly
+    // final rsaPair = generateRSAkeyPair(getSecureRandom(), bitLength: 1024);
+    // final plaintext = 'Hello, world!';
+    // final bytes = Uint8List.fromList(plaintext.codeUnits);
+    // final encrypted = rsaEncrypt(rsaPair.publicKey, bytes);
+    // final decrypted = rsaDecrypt(rsaPair.privateKey, encrypted);
+    // print(encrypted);
+
+    // print(utf8.decode(decrypted));
+//======================================================================================
     // setState(() {
     //   fetching = false;
     // });
