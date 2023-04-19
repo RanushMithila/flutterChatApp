@@ -98,6 +98,7 @@ class _IndividualPageState extends State<IndividualPage> {
       socket.on('message', (data) {
         print(data);
         setMessage("destination", data["message"]);
+        print("Saving to local database");
         //save to local db
         db.insertMessage(
           DataModel(
@@ -107,6 +108,7 @@ class _IndividualPageState extends State<IndividualPage> {
             targetId: data["targetId"],
           ),
         );
+
         if (_scrollController.positions.isNotEmpty) {
           _scrollController.animateTo(
             _scrollController.position.maxScrollExtent,
@@ -126,6 +128,7 @@ class _IndividualPageState extends State<IndividualPage> {
   void sendMessage(String message, int sourseId, int targetId) {
     setMessage("sourse", message);
 
+    print("Saving to local database");
     //save to local db
     db.insertMessage(
       DataModel(
@@ -143,6 +146,8 @@ class _IndividualPageState extends State<IndividualPage> {
   }
 
   void setMessage(String type, String message) {
+    print("Set message");
+    print(type);
     MessageModel messageModel = MessageModel(
         type: type,
         message: message,
