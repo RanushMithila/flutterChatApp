@@ -20,9 +20,16 @@ class IndividualPage extends StatefulWidget {
     super.key,
     required this.chatModel,
     required this.sourceChat,
+    required this.rsaPair,
   });
   final ChatModel chatModel;
   final ChatModel sourceChat;
+  final rsaPair;
+
+  void getKey() {
+    final publicKey = rsaPair.publicKey;
+    final privateKey = rsaPair.privateKey;
+  }
 
   @override
   State<IndividualPage> createState() => _IndividualPageState();
@@ -47,7 +54,7 @@ class _IndividualPageState extends State<IndividualPage> {
     super.initState();
     //connect to the server
     connect();
-
+    getKey();
     //local db
     db = DB();
     getMessagesInd();

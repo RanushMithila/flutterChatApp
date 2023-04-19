@@ -9,9 +9,11 @@ class ChatPage extends StatefulWidget {
     super.key,
     required this.chatModels,
     required this.sourceChat,
+    this.rsaPair,
   });
   final List<ChatModel> chatModels;
   final ChatModel sourceChat;
+  final rsaPair;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -37,6 +39,7 @@ class _ChatPageState extends State<ChatPage> {
         itemBuilder: (context, index) => CustomCard(
           chatModel: widget.chatModels[index],
           sourceChat: widget.sourceChat,
+          rsaPair: widget.rsaPair,
         ),
       ),
     );

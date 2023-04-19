@@ -39,6 +39,8 @@ class _LoginScreenState extends State<LoginScreen> {
   late DB db;
   List<UserDataModel> user = [];
   List<KeyModel> key = [];
+  //getting keys
+  final rsaPair = generateRSAkeyPair(getSecureRandom(), bitLength: 1024);
 
   @override
   void initState() {
@@ -52,10 +54,6 @@ class _LoginScreenState extends State<LoginScreen> {
     // Future publicKey = keyPair.then((value) => value.publicKey);
     // final privateKey = keyPair.then((value) => value.privateKey);
     // ================================================================
-
-    //getting keys
-    final rsaPair = generateRSAkeyPair(getSecureRandom(), bitLength: 1024);
-
     // final private = encodePrivateKeyToPemPKCS1(privateKey);
     // publicKey.then((value) => print(value));
   }
@@ -123,6 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 builder: (Builder) => Homescreen(
                   chatModels: chatModel,
                   sourceChat: sourceChat,
+                  rsaPair: rsaPair,
                 ),
               ),
             );
@@ -147,6 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
           builder: (Builder) => Homescreen(
             chatModels: chatModel,
             sourceChat: sourceChat,
+            rsaPair: rsaPair,
           ),
         ),
       );

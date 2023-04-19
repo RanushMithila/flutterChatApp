@@ -9,9 +9,11 @@ class CustomCard extends StatelessWidget {
     super.key,
     required this.chatModel,
     required this.sourceChat,
+    this.rsaPair,
   });
   final ChatModel chatModel;
   final ChatModel sourceChat;
+  final rsaPair;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,7 @@ class CustomCard extends StatelessWidget {
                 builder: (context) => IndividualPage(
                       chatModel: chatModel,
                       sourceChat: sourceChat,
+                      rsaPair: rsaPair,
                     )));
       },
       child: Column(
