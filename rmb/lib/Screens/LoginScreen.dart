@@ -8,6 +8,21 @@ import 'package:rmb/sqlite/UserDataModel.dart';
 import '../Model/ChatModel.dart';
 import '../sqlite/Database.dart';
 
+//public key private key
+import 'package:rsa_encrypt/rsa_encrypt.dart';
+import 'package:pointycastle/api.dart' as crypto;
+
+//Future to hold our KeyPair
+late Future<crypto.AsymmetricKeyPair> futureKeyPair;
+//to store the KeyPair once we get data from our future
+late crypto.AsymmetricKeyPair keyPair;
+
+Future<crypto.AsymmetricKeyPair<crypto.PublicKey, crypto.PrivateKey>>
+    getKeyPair() {
+  var helper = RsaKeyHelper();
+  return helper.computeRSAKeyPair(helper.getSecureRandom());
+}
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -26,6 +41,11 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     db = DB();
     getUserLog();
+
+    //getting keys
+    final keyPair = getKeyPair();
+    final publicKey = keyPair.then((value) => value.publicKey);
+    final privateKey = keyPair.then((value) => value.privateKey);
   }
 
   late ChatModel sourceChat;

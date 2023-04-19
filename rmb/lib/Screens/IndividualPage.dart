@@ -44,6 +44,8 @@ class _IndividualPageState extends State<IndividualPage> {
     //connect to the server
     connect();
 
+    // publicKey.then((value) => print(value));
+
     //local db
     db = DB();
     getMessagesInd();
