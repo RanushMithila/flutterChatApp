@@ -64,8 +64,11 @@ class _IndividualPageState extends State<IndividualPage> {
 
   void getMessagesInd() async {
     datas = await db.getMessages();
+    var len = datas.length;
+    for (var i = 0; i < len; i++) {
+      print(datas[i].message);
+    }
     datas.forEach((element) {
-      print(element.message);
       if ((widget.sourceChat.id == element.sourseId &&
               widget.chatModel.id == element.targetId) ||
           (widget.sourceChat.id == element.targetId &&
@@ -96,10 +99,10 @@ class _IndividualPageState extends State<IndividualPage> {
 
     try {
       socket.on('message', (data) {
-        print(data);
         setMessage("destination", data["message"]);
-        print("Saving to local database");
         //save to local db
+        print("Trying to insert...");
+        print(data["message"]);
         db.insertMessage(
           DataModel(
             type: "destination",
@@ -127,9 +130,10 @@ class _IndividualPageState extends State<IndividualPage> {
 
   void sendMessage(String message, int sourseId, int targetId) {
     setMessage("sourse", message);
-
-    print("Saving to local database");
     //save to local db
+    print("Trying to insert...");
+    print(message);
+
     db.insertMessage(
       DataModel(
         type: "sourse",
@@ -146,14 +150,11 @@ class _IndividualPageState extends State<IndividualPage> {
   }
 
   void setMessage(String type, String message) {
-    print("Set message");
-    print(type);
     MessageModel messageModel = MessageModel(
         type: type,
         message: message,
         time: DateTime.now().toString().substring(10, 16));
     if (mounted) {
-      // print(messages);
       setState(() {
         messages.add(messageModel);
       });
