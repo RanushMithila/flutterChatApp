@@ -8,7 +8,7 @@ import 'KeyModel.dart';
 class DB {
   Future<Database> initDB() async {
     String path = await getDatabasesPath();
-    return await openDatabase(join(path, "rmb.db"), version: 2,
+    return await openDatabase(join(path, "rmb.db"), version: 3,
         onCreate: (Database db, int version) async {
       print('Creating messages table');
       await db.execute('''
