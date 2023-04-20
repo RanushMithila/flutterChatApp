@@ -4,7 +4,7 @@ A new Flutter project.
 
 # Languages
 
-![Dart,Socket.io](https://skills.thijs.gg/icons?i=dart,socket.io)
+![Dart,Socket.io,SQLite](https://skills.thijs.gg/icons?i=dart,sqlite)
 
 ## Getting Started
 
