@@ -2,6 +2,10 @@
 
 A new Flutter project.
 
+# Languages
+
+![Dart,Socket.io](https://skills.thijs.gg/icons?i=dart,socket.io)
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
