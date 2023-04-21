@@ -9,24 +9,23 @@ class CustomCard extends StatelessWidget {
     super.key,
     required this.chatModel,
     required this.sourceChat,
-    this.rsaPair,
   });
   final ChatModel chatModel;
   final ChatModel sourceChat;
-  final rsaPair;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => IndividualPage(
-                      chatModel: chatModel,
-                      sourceChat: sourceChat,
-                      rsaPair: rsaPair,
-                    )));
+          context,
+          MaterialPageRoute(
+            builder: (context) => IndividualPage(
+              chatModel: chatModel,
+              sourceChat: sourceChat,
+            ),
+          ),
+        );
       },
       child: Column(
         children: [

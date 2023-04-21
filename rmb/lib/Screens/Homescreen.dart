@@ -3,16 +3,16 @@ import 'package:rmb/Model/ChatModel.dart';
 import 'package:rmb/Pages/CameraPage.dart';
 import 'package:rmb/Pages/ChatPage.dart';
 
+import 'package:pointycastle/pointycastle.dart';
+
 class Homescreen extends StatefulWidget {
   const Homescreen({
     super.key,
     required this.chatModels,
     required this.sourceChat,
-    required this.rsaPair,
   });
   final List<ChatModel> chatModels;
   final ChatModel sourceChat;
-  final rsaPair;
 
   @override
   State<Homescreen> createState() => _HomescreenState();
@@ -78,10 +78,9 @@ class _HomescreenState extends State<Homescreen> {
             ChatPage(
               chatModels: widget.chatModels,
               sourceChat: widget.sourceChat,
-              rsaPair: widget.rsaPair,
             ),
-            Text('Status'),
-            Text('Call'),
+            Center(child: Text('Status')),
+            Center(child: Text('Call')),
           ],
         ),
       ),

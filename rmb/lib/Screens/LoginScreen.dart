@@ -5,27 +5,9 @@ import 'package:rmb/Screens/HomeScreen.dart';
 import 'package:rmb/sqlite/KeyModel.dart';
 import 'package:rmb/sqlite/UserDataModel.dart';
 
+import '../Encrypt/EncryptString.dart';
 import '../Model/ChatModel.dart';
-import '../Model/RSAModel.dart';
 import '../sqlite/Database.dart';
-
-// this part remove because I found new algorithm for RSA
-// ================================================================
-// //public key private key
-// import 'package:rsa_encrypt/rsa_encrypt.dart';
-// import 'package:pointycastle/api.dart' as crypto;
-
-// //Future to hold our KeyPair
-// late Future<crypto.AsymmetricKeyPair> futureKeyPair;
-// //to store the KeyPair once we get data from our future
-// late crypto.AsymmetricKeyPair keyPair;
-
-// Future<crypto.AsymmetricKeyPair<crypto.PublicKey, crypto.PrivateKey>>
-//     getKeyPair() {
-//   var helper = RsaKeyHelper();
-//   return helper.computeRSAKeyPair(helper.getSecureRandom());
-// }
-// ================================================================
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -38,24 +20,15 @@ class _LoginScreenState extends State<LoginScreen> {
   //local database
   late DB db;
   List<UserDataModel> user = [];
-  List<KeyModel> key = [];
+  late final key;
   //getting keys
-  final rsaPair = generateRSAkeyPair(getSecureRandom(), bitLength: 1024);
 
   @override
   void initState() {
     super.initState();
     db = DB();
     getUserLog();
-
-    // this part remove because I found new algorithm for RSA
-    // ================================================================
-    // final keyPair = getKeyPair();
-    // Future publicKey = keyPair.then((value) => value.publicKey);
-    // final privateKey = keyPair.then((value) => value.privateKey);
-    // ================================================================
-    // final private = encodePrivateKeyToPemPKCS1(privateKey);
-    // publicKey.then((value) => print(value));
+    getKeyLog();
   }
 
   late ChatModel sourceChat;
@@ -121,7 +94,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 builder: (Builder) => Homescreen(
                   chatModels: chatModel,
                   sourceChat: sourceChat,
-                  rsaPair: rsaPair,
                 ),
               ),
             );
@@ -146,7 +118,6 @@ class _LoginScreenState extends State<LoginScreen> {
           builder: (Builder) => Homescreen(
             chatModels: chatModel,
             sourceChat: sourceChat,
-            rsaPair: rsaPair,
           ),
         ),
       );
@@ -155,11 +126,18 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void getKeyLog() async {
     key = await db.getKey();
-    if (key.isNotEmpty) {
-      print(key[0].privateKey);
-      print(key[0].publicKey);
-    } else {
-      //genarate new key and store
+    if (!key.isNotEmpty) {
+      generateKeys().then((JsonWebKeyPair keys) {
+        final myPublicKey = keys.publicKey;
+        final myPrivateKey = keys.privateKey;
+        db.insertKey(
+          KeyModel(
+            publicKey: myPublicKey,
+            privateKey: myPrivateKey,
+          ),
+        );
+      });
+      print("Inserted your keys into the DB");
     }
   }
 }

@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:typed_data';
-
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -8,11 +5,12 @@ import 'package:rmb/CustomUI/OwnMessageCard.dart';
 import 'package:rmb/CustomUI/ReplyCard.dart';
 import 'package:rmb/Model/MessageModel.dart';
 import 'package:rmb/sqlite/DataModel.dart';
+import 'package:rmb/sqlite/KeyModel.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:sqflite/sqflite.dart';
 
+// import '../Encrypt/EncryptString.dart';
 import '../Model/ChatModel.dart';
-import '../Model/RSAModel.dart';
 import '../sqlite/Database.dart';
 
 class IndividualPage extends StatefulWidget {
@@ -20,16 +18,9 @@ class IndividualPage extends StatefulWidget {
     super.key,
     required this.chatModel,
     required this.sourceChat,
-    required this.rsaPair,
   });
   final ChatModel chatModel;
   final ChatModel sourceChat;
-  final rsaPair;
-
-  void getKey() {
-    final publicKey = rsaPair.publicKey;
-    final privateKey = rsaPair.privateKey;
-  }
 
   @override
   State<IndividualPage> createState() => _IndividualPageState();
@@ -39,7 +30,11 @@ class _IndividualPageState extends State<IndividualPage> {
   //local database
   late DB db;
   List<DataModel> datas = [];
+  List<KeyModel> keys = [];
   // bool fetching = true;
+
+  String myPublicKey = "";
+  String myPrivateKey = "";
 
   bool show = false;
   FocusNode focusNode = FocusNode();
@@ -54,25 +49,29 @@ class _IndividualPageState extends State<IndividualPage> {
     super.initState();
     //connect to the server
     connect();
-    // getKey();
+
     //local db
     db = DB();
     getMessagesInd();
+    getKeys();
+    //public key requesting
+    socket.emit("getpub",
+        {"user": widget.sourceChat.id, "targetUser": widget.chatModel.id});
+    print("Requested public key...");
+
     //access all the messages from the local database database and display them one by one
 //======================================================================================
 
     //test
 //======================================================================================
+// Generating keyPair using the function defined in above steps
 
-    //it works perfectly
-    // final rsaPair = generateRSAkeyPair(getSecureRandom(), bitLength: 1024);
-    // final plaintext = 'Hello, world!';
-    // final bytes = Uint8List.fromList(plaintext.codeUnits);
-    // final encrypted = rsaEncrypt(rsaPair.publicKey, bytes);
-    // final decrypted = rsaDecrypt(rsaPair.privateKey, encrypted);
-    // print(encrypted);
+    // widget.keyPair.then((value) {
+    //   myPublicKey = value.publicKey;
+    //   myPrivateKey = value.privateKey;
+    // });
+    print(myPublicKey);
 
-    // print(utf8.decode(decrypted));
 //======================================================================================
     // setState(() {
     //   fetching = false;
@@ -151,6 +150,18 @@ class _IndividualPageState extends State<IndividualPage> {
 
     print(socket.connected);
     socket.emit("signin", widget.sourceChat.id);
+
+    //send public key
+    // socket.on('reqpub', (data) {
+    //   print("public key requested\nMy Public key: ");
+    //   print(publicKeyToString(widget.rsaPair.publicKey));
+
+    //   socket.emit("respub", {
+    //     "user": widget.sourceChat.id,
+    //     "targetUser": widget.chatModel.id,
+    //     "pub": publicKeyToString(widget.rsaPair.publicKey),
+    //   });
+    // });
   }
 
   void sendMessage(String message, int sourseId, int targetId) {
@@ -559,4 +570,12 @@ class _IndividualPageState extends State<IndividualPage> {
   //     },
   //   );
   // }
+
+  void getKeys() async {
+    keys = await db.getKey();
+    // print(user[0].username);
+    if (keys.isNotEmpty) {
+      print(keys[0].publicKey);
+    }
+  }
 }
