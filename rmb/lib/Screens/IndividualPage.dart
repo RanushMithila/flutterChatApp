@@ -48,7 +48,11 @@ class _IndividualPageState extends State<IndividualPage> {
   void initState() {
     super.initState();
     //connect to the server
-    connect();
+    try {
+      connect();
+    } catch (err) {
+      print("Error while connecting to the server: $err");
+    }
 
     //local db
     db = DB();
@@ -115,6 +119,9 @@ class _IndividualPageState extends State<IndividualPage> {
       print("Connected");
     });
 
+    print(socket.connected);
+    socket.emit("signin", widget.sourceChat.id);
+
     socket.onConnectError((data) {
       print("Error while establishing connection...");
     });
@@ -147,9 +154,6 @@ class _IndividualPageState extends State<IndividualPage> {
     } catch (err) {
       print(err);
     }
-
-    print(socket.connected);
-    socket.emit("signin", widget.sourceChat.id);
 
     //send public key
     // socket.on('reqpub', (data) {

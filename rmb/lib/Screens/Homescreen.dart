@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:rmb/Model/ChatModel.dart';
 import 'package:rmb/Pages/CameraPage.dart';
 import 'package:rmb/Pages/ChatPage.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import 'package:pointycastle/pointycastle.dart';
+
+import '../sqlite/Database.dart';
+import '../sqlite/KeyModel.dart';
 
 class Homescreen extends StatefulWidget {
   const Homescreen({
@@ -19,6 +23,17 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
+  late DB db;
+  late IO.Socket socket;
+  List<KeyModel> keys = [];
+
+  @override
+  void initState() {
+    super.initState();
+    db = DB();
+    connect();
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -85,5 +100,53 @@ class _HomescreenState extends State<Homescreen> {
         ),
       ),
     );
+  }
+
+  void connect() {
+    // print("Now I'm executing connect() function");
+    socket = IO.io(
+      'http://192.168.43.180:5000',
+      <String, dynamic>{
+        'transports': ['websocket'],
+        'autoConnect': false,
+      },
+    );
+
+    socket.connect();
+    socket.onConnect((data) {
+      print("Connected");
+      getKeys();
+    });
+
+    socket.onConnectError((data) {
+      print("Error while establishing connection...");
+    });
+
+    if (!socket.connected) {
+      print("Not connected. Retying...");
+      socket.connect();
+    }
+    print(socket.connected);
+    socket.emit("signin", widget.sourceChat.id);
+  }
+
+  void getKeys() async {
+    db.getKey().then((value) {
+      print("value: ");
+      print(value[0].publicKey);
+      keys = value;
+      if (keys.isNotEmpty) {
+        try {
+          socket.emit("pubKey", {
+            "userID": widget.sourceChat.id,
+            "PublicKey": keys[0].publicKey,
+          });
+          socket.disconnect();
+        } catch (e) {
+          print(e);
+        }
+      }
+    });
+    // print(user[0].username);
   }
 }
