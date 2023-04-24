@@ -35,6 +35,7 @@ class _IndividualPageState extends State<IndividualPage> {
 
   String myPublicKey = "";
   String myPrivateKey = "";
+  String targetPublicKey = "";
 
   bool show = false;
   FocusNode focusNode = FocusNode();
@@ -59,16 +60,9 @@ class _IndividualPageState extends State<IndividualPage> {
     getMessagesInd();
     getKeys();
     //public key requesting
-    socket.emit("getpub",
-        {"user": widget.sourceChat.id, "targetUser": widget.chatModel.id});
+    // socket.emit("getpub",
+    //     {"user": widget.sourceChat.id, "targetUser": widget.chatModel.id});
     print("Requested public key...");
-
-    //access all the messages from the local database database and display them one by one
-//======================================================================================
-
-    //test
-//======================================================================================
-// Generating keyPair using the function defined in above steps
 
     // widget.keyPair.then((value) {
     //   myPublicKey = value.publicKey;
@@ -107,7 +101,7 @@ class _IndividualPageState extends State<IndividualPage> {
 
   void connect() {
     socket = IO.io(
-      'http://192.168.43.180:5000',
+      'http://10.10.55.145:5000',
       <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': false,
@@ -155,6 +149,10 @@ class _IndividualPageState extends State<IndividualPage> {
       print(err);
     }
 
+    socket.emit("reqpub", {
+      "user": widget.sourceChat.id,
+      "targetUser": widget.chatModel.id,
+    });
     //send public key
     // socket.on('reqpub', (data) {
     //   print("public key requested\nMy Public key: ");
@@ -165,7 +163,6 @@ class _IndividualPageState extends State<IndividualPage> {
     //     "targetUser": widget.chatModel.id,
     //     "pub": publicKeyToString(widget.rsaPair.publicKey),
     //   });
-    // });
   }
 
   void sendMessage(String message, int sourseId, int targetId) {

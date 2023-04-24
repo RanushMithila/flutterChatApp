@@ -23,15 +23,16 @@ class Homescreen extends StatefulWidget {
 }
 
 class _HomescreenState extends State<Homescreen> {
+  bool isSent = false;
   late DB db;
-  late IO.Socket socket;
+  late IO.Socket socketPub;
   List<KeyModel> keys = [];
 
   @override
   void initState() {
     super.initState();
     db = DB();
-    connect();
+    connectServer();
   }
 
   @override
@@ -102,32 +103,32 @@ class _HomescreenState extends State<Homescreen> {
     );
   }
 
-  void connect() {
+  void connectServer() {
     // print("Now I'm executing connect() function");
-    socket = IO.io(
-      'http://192.168.43.180:5000',
+    socketPub = IO.io(
+      'http://10.10.55.145:5000',
       <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': false,
       },
     );
 
-    socket.connect();
-    socket.onConnect((data) {
+    socketPub.connect();
+    socketPub.onConnect((data) {
       print("Connected");
       getKeys();
     });
 
-    socket.onConnectError((data) {
+    socketPub.onConnectError((data) {
       print("Error while establishing connection...");
     });
 
-    if (!socket.connected) {
+    if (!socketPub.connected) {
       print("Not connected. Retying...");
-      socket.connect();
+      socketPub.connect();
     }
-    print(socket.connected);
-    socket.emit("signin", widget.sourceChat.id);
+    print(socketPub.connected);
+    socketPub.emit("signin", widget.sourceChat.id);
   }
 
   void getKeys() async {
@@ -135,13 +136,15 @@ class _HomescreenState extends State<Homescreen> {
       print("value: ");
       print(value[0].publicKey);
       keys = value;
-      if (keys.isNotEmpty) {
+      if (keys.isNotEmpty && !isSent) {
         try {
-          socket.emit("pubKey", {
+          socketPub.emit("pubKey", {
             "userID": widget.sourceChat.id,
             "PublicKey": keys[0].publicKey,
           });
-          socket.disconnect();
+          isSent = true;
+          socketPub.disconnect();
+          socketPub.destroy();
         } catch (e) {
           print(e);
         }
