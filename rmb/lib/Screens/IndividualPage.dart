@@ -59,16 +59,13 @@ class _IndividualPageState extends State<IndividualPage> {
     db = DB();
     getMessagesInd();
     getKeys();
-    //public key requesting
-    // socket.emit("getpub",
-    //     {"user": widget.sourceChat.id, "targetUser": widget.chatModel.id});
-    print("Requested public key...");
 
-    // widget.keyPair.then((value) {
-    //   myPublicKey = value.publicKey;
-    //   myPrivateKey = value.privateKey;
-    // });
-    print(myPublicKey);
+    //request public key
+    print("Public key requesting... ");
+    socket.emit("reqpub", {
+      "user": widget.sourceChat.id,
+      "targetUser": widget.chatModel.id,
+    });
 
 //======================================================================================
     // setState(() {
@@ -149,20 +146,11 @@ class _IndividualPageState extends State<IndividualPage> {
       print(err);
     }
 
-    socket.emit("reqpub", {
-      "user": widget.sourceChat.id,
-      "targetUser": widget.chatModel.id,
+    //receving requested public key
+    socket.on('respub', (data) {
+      print("object");
+      print("requested public key is: ${data["publicKey"]}");
     });
-    //send public key
-    // socket.on('reqpub', (data) {
-    //   print("public key requested\nMy Public key: ");
-    //   print(publicKeyToString(widget.rsaPair.publicKey));
-
-    //   socket.emit("respub", {
-    //     "user": widget.sourceChat.id,
-    //     "targetUser": widget.chatModel.id,
-    //     "pub": publicKeyToString(widget.rsaPair.publicKey),
-    //   });
   }
 
   void sendMessage(String message, int sourseId, int targetId) {
