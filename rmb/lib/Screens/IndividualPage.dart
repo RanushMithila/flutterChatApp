@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -9,7 +11,7 @@ import 'package:rmb/sqlite/KeyModel.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:sqflite/sqflite.dart';
 
-// import '../Encrypt/EncryptString.dart';
+import '../Encrypt/EncryptString.dart';
 import '../Model/ChatModel.dart';
 import '../sqlite/Database.dart';
 
@@ -31,11 +33,13 @@ class _IndividualPageState extends State<IndividualPage> {
   late DB db;
   List<DataModel> datas = [];
   List<KeyModel> keys = [];
+  String targetKeys = "";
   // bool fetching = true;
 
   String myPublicKey = "";
   String myPrivateKey = "";
   String targetPublicKey = "";
+  late List<int> drvkeys;
 
   bool show = false;
   FocusNode focusNode = FocusNode();
@@ -66,7 +70,6 @@ class _IndividualPageState extends State<IndividualPage> {
       "user": widget.sourceChat.id,
       "targetUser": widget.chatModel.id,
     });
-
 //======================================================================================
     // setState(() {
     //   fetching = false;
@@ -96,11 +99,15 @@ class _IndividualPageState extends State<IndividualPage> {
     });
   }
 
-  void connect() {
+  void testcase() async {
+    drvkeys = await deriveKey(keys[0].privateKey, targetKeys);
+  }
+
+  void connect() async {
     socket = IO.io(
       //UOM
       'http://10.10.55.145:5000',
-      //My hotspot 
+      //My hotspot
       // 'http://192.168.43.180:5000',
       <String, dynamic>{
         'transports': ['websocket'],
@@ -123,7 +130,12 @@ class _IndividualPageState extends State<IndividualPage> {
     socket.onDisconnect((data) => print('Disconnected....'));
 
     try {
-      socket.on('message', (data) {
+      socket.on('message', (data) async {
+        drvkeys = await deriveKey(keys[0].privateKey, targetKeys);
+        var base64msg = utf8.decode(base64Decode(data["message"]));
+        print("Base64 decoded message: " + base64msg);
+        data["message"] = await decryptMessage(base64msg, drvkeys);
+        print("decrypted message: " + data["message"]);
         setMessage("destination", data["message"]);
         //save to local db
         print("Trying to insert...");
@@ -151,29 +163,36 @@ class _IndividualPageState extends State<IndividualPage> {
 
     //receving requested public key
     socket.on('respub', (data) {
-      print("object");
+      targetKeys = data["publicKey"]["pub"];
+      print("got it...");
+      // print("Reciver public key: " + data["publicKey"]["pub"].toString());
       print("requested public key is: ${data["publicKey"]}");
     });
   }
 
-  void sendMessage(String message, int sourseId, int targetId) {
+  void sendMessage(String message, int sourseId, int targetId) async {
+    testcase();
+    List<int> drvkeys = await deriveKey(keys[0].privateKey, targetKeys);
+    String encmsg = await encryptMessage(message, drvkeys as List<int>);
+    encmsg = base64Encode(utf8.encode(encmsg));
+    print("msg: " + encmsg);
     setMessage("sourse", message);
     //save to local db
     print("Trying to insert...");
-    print(message);
+    print(encmsg);
 
     db.insertMessage(
       DataModel(
         type: "sourse",
         sourseId: sourseId,
         targetId: targetId,
-        message: message,
+        message: encmsg,
       ),
     );
 
     socket.emit(
       "message",
-      {"message": message, "sourseId": sourseId, "targetId": targetId},
+      {"message": encmsg, "sourseId": sourseId, "targetId": targetId},
     );
   }
 

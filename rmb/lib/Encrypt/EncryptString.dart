@@ -28,6 +28,8 @@ class JsonWebKeyPair {
 // ReceiverJwk -> receiver.publicKey
 Future<List<int>> deriveKey(String senderJwk, String receiverJwk) async {
   // Sender's key
+  print("Sender Key: " + senderJwk);
+  print("Receiver Key: " + receiverJwk);
   final senderPrivateKey = json.decode(senderJwk);
   final senderEcdhKey = await EcdhPrivateKey.importJsonWebKey(
     senderPrivateKey,
@@ -43,6 +45,7 @@ Future<List<int>> deriveKey(String senderJwk, String receiverJwk) async {
 
   // Generating CryptoKey
   final derivedBits = await senderEcdhKey.deriveBits(256, receiverEcdhKey);
+  print("Key: " + derivedBits.toString());
   return derivedBits;
 }
 

@@ -127,6 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void getKeyLog() async {
     key = await db.getKey();
     if (!key.isNotEmpty) {
+      print("Genarating new keys...");
       generateKeys().then((JsonWebKeyPair keys) {
         final myPublicKey = keys.publicKey;
         final myPrivateKey = keys.privateKey;
