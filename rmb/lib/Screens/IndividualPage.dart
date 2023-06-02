@@ -106,9 +106,9 @@ class _IndividualPageState extends State<IndividualPage> {
   void connect() async {
     socket = IO.io(
       //UOM
-      'http://10.10.55.145:5000',
+      // 'http://10.10.55.145:5000',
       //My hotspot
-      // 'http://192.168.43.180:5000',
+      'http://192.168.43.180:5000',
       <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': false,

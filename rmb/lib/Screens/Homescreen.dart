@@ -106,8 +106,8 @@ class _HomescreenState extends State<Homescreen> {
   void connectServer() {
     // print("Now I'm executing connect() function");
     socketPub = IO.io(
-      'http://10.10.55.145:5000',
-      // 'http://192.168.43.180:5000',
+      // 'http://10.10.55.145:5000',
+      'http://192.168.43.180:5000',
       <String, dynamic>{
         'transports': ['websocket'],
         'autoConnect': false,

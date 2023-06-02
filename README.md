@@ -12,4 +12,14 @@ A new Flutter project.
 2. Download This Repo
 3. setup android emulator and run
 
+### My emulator
 
+![Emulator](./img/emulator.png)
+
+### App interface
+
+![Interfaceator](./img/interface.png)
+
+### Message Sending
+
+![Send message](./img/send_msg.png)
