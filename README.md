@@ -9,4 +9,7 @@ A new Flutter project.
 ## Getting Started
 
 1. Download Backend server and setup [Repo](https://github.com/RanushMithila/flutterChatAppServer)
-2. 
+2. Download This Repo
+3. setup android emulator and run
+
+
